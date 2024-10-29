@@ -9,10 +9,10 @@ external_stylesheets = [dbc.themes.CERULEAN]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 # Set layout
-app.layout = create_layout(app)
+app.layout = create_layout(app_title="AnnoFig")
 
 # Register callbacks
 register_callbacks(app)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=8050)
+    app.run(debug=True, host='0.0.0.0', port=8051)
