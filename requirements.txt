@@ -5,3 +5,4 @@ plotly
 matplotlib
 seaborn
 adjustText
+dash_daq
