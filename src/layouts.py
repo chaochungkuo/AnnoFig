@@ -11,18 +11,18 @@ def create_layout(app_title):
             dbc.Col([
                 html.H1("AnnoFig"),
                 html.Div("Annotating your figure as you want."),
-                html.Div("When there are too many data points, every updating might take a few seconds to process."),
+                html.Div("When there are too many data points, every updating might take a few seconds to process. If error occurs, please contact chao-chung.kuo@rwth-aachen.de or refresh the page."),
                 html.Br(),
                 # Control Panel
                 html.H3("Control Panel"),
                 dcc.Upload(id='upload-data', children=html.Button('Upload Excel or CSV')),
                 html.Div(id='file-info'),  # Div to display file name and row count
-                dcc.Dropdown(id='x-axis', placeholder="Select X axis", value="log2FoldChange"),
+                dcc.Dropdown(id='x-axis', placeholder="Select X axis"),
                 dcc.Checklist(id='x-log-scale', options=[{'label': 'Log10 X axis', 'value': 'log'}], inline=False),
                 dcc.Checklist(id='x-revert', options=[{'label': 'Revert X axis', 'value': 'revert'}], inline=False),
-                dcc.Dropdown(id='y-axis', placeholder="Select Y axis", value="padj"),
-                dcc.Checklist(id='y-log-scale', options=[{'label': 'Log10 Y axis', 'value': 'log'}], inline=False, value=["log"]),
-                dcc.Checklist(id='y-revert', options=[{'label': 'Revert Y axis', 'value': 'revert'}], inline=False, value=["revert"]),
+                dcc.Dropdown(id='y-axis', placeholder="Select Y axis"),
+                dcc.Checklist(id='y-log-scale', options=[{'label': 'Log10 Y axis', 'value': 'log'}], inline=False),
+                dcc.Checklist(id='y-revert', options=[{'label': 'Revert Y axis', 'value': 'revert'}], inline=False),
                 html.Br(),
                 
                 # Theme Panel
