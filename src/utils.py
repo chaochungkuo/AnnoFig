@@ -166,7 +166,7 @@ def generate_static_figure(df, x_col, y_col, x_log=False, x_revert=False, y_log=
     
         # Plot non-highlighted points
         sns.scatterplot(x=x_col, y=y_col, data=non_highlighted_df, ax=ax, s=point_size,
-                        color=point_color, label='Data Points', legend=False)
+                        color=point_color, label='Data Points', legend=False, edgecolor=None)
 
         # Plot highlighted points with a different color
         sns.scatterplot(x=x_col, y=y_col, data=highlighted_df, ax=ax, s=point_size,
@@ -190,7 +190,7 @@ def generate_static_figure(df, x_col, y_col, x_log=False, x_revert=False, y_log=
     else:
         # Plot non-highlighted points
         sns.scatterplot(x=x_col, y=y_col, data=df, ax=ax, s=point_size,
-                        color=point_color, label='Data Points', legend=False)
+                        color=point_color, label='Data Points', legend=False, edgecolor=None)
         # Apply log scaling to the data if specified
         if x_log:
             ax.set_xscale('log')
