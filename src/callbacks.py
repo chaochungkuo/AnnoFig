@@ -30,7 +30,8 @@ def register_callbacks(app):
         Input('label-column', 'value'), Input('annotate-column', 'value'), 
         Input('ranking-top-n', 'value'), Input('annotate-cutoff', 'value'),
         Input('annotate-revert', 'value'), Input('manual-genes', 'value'),
-        Input('annotation-color', 'value')],
+        Input('annotation-color', 'value'), Input('annotation-font-size', 'value'),
+        Input('annotation-font-color', 'value'), Input('force-text', 'value')],
         [State('upload-data', 'contents')],
         prevent_initial_call=True
     )
@@ -38,12 +39,14 @@ def register_callbacks(app):
                                   point_size, point_color, theme,
                                   label_col, annotate_col, 
                                   top_n, annotate_cutoff,
-                                  annotate_revert, manual_genes, annotation_color, file_content):
+                                  annotate_revert, manual_genes, annotation_color,
+                                  annotation_font_size, annotation_font_color, force_text, file_content):
         df = parse_data(file_content)
         figure = generate_interactive_figure(
             df, x_col, y_col, x_log, x_revert, y_log, y_revert, 
             point_size, point_color, theme, label_col, annotate_col,
-            top_n, annotate_cutoff, annotate_revert, manual_genes, annotation_color
+            top_n, annotate_cutoff, annotate_revert, manual_genes, annotation_color,
+            annotation_font_size, annotation_font_color, force_text
         )
         return figure
 
@@ -58,7 +61,8 @@ def register_callbacks(app):
         Input('label-column', 'value'), Input('annotate-column', 'value'), 
         Input('ranking-top-n', 'value'), Input('annotate-cutoff', 'value'),
         Input('annotate-revert', 'value'), Input('manual-genes', 'value'),
-        Input('annotation-color', 'value')],
+        Input('annotation-color', 'value'), Input('annotation-font-size', 'value'),
+        Input('annotation-font-color', 'value'), Input('force-text', 'value')],
         [State('upload-data', 'contents')],
         prevent_initial_call=True
     )
@@ -66,12 +70,14 @@ def register_callbacks(app):
                              point_size, point_color, theme, width, height,
                              label_col, annotate_col, 
                              top_n, annotate_cutoff,
-                             annotate_revert, manual_genes, annotation_color, file_content):
+                             annotate_revert, manual_genes, annotation_color,
+                             annotation_font_size, annotation_font_color, force_text, file_content):
         df = parse_data(file_content)
         static_img_path = generate_static_figure(
             df, x_col, y_col, x_log, x_revert, y_log, y_revert, 
             point_size, point_color, theme,  width, height, label_col, annotate_col,
-            top_n, annotate_cutoff, annotate_revert, manual_genes, annotation_color
+            top_n, annotate_cutoff, annotate_revert, manual_genes, annotation_color,
+            annotation_font_size, annotation_font_color, force_text
         )
         static_img_path = 'data:assets/png;base64,{}'.format(base64.b64encode(
                 open(

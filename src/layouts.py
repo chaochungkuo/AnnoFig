@@ -63,6 +63,16 @@ def create_layout(app_title):
                     label='Color Picker',
                     value=dict(hex='#FF8711')
                 ),
+                html.Div("Define the font size of the annotated labels"),
+                dcc.Slider(id='annotation-font-size', min=5, max=20, value=10, marks={i: str(i) for i in range(5, 21)}),
+                html.Div("Define the font color of the annotated labels"),
+                daq.ColorPicker(
+                    id='annotation-font-color',
+                    label='Color Picker',
+                    value=dict(hex='#000000')
+                ),
+                html.Div("Control the repelling force for text annotations"),
+                dcc.Input(id='force-text', type='number', placeholder='Enter repelling force', value=0.3, step=0.1),
             ], width=4),
 
             dbc.Col([
@@ -100,6 +110,7 @@ def create_banner(app_title):
                     ))
                 ], justify="start")
         ],
-        style ={'padding':'0.5em'},
-        )
+        style={'padding': '0.5em'},
+    )
+
 
