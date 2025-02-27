@@ -3,7 +3,6 @@ import dash_bootstrap_components as dbc
 import base64
 import dash_daq as daq
 
-
 def create_layout(app_title):
     return dbc.Container([
         create_banner(app_title=app_title),

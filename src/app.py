@@ -6,7 +6,8 @@ import dash_bootstrap_components as dbc
 
 external_stylesheets = [dbc.themes.CERULEAN]
 # Initialize Dash app
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+app = Dash(__name__, external_stylesheets=external_stylesheets,
+           url_base_pathname='/annofig/')
 
 # Set layout
 app.layout = create_layout(app_title="AnnoFig")
