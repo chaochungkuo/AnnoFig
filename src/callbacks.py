@@ -1,7 +1,7 @@
 from dash import Input, Output, State
 import pandas as pd
 import plotly.express as px
-from utils import parse_data, generate_interactive_figure, generate_static_figure
+from utils import parse_data, generate_interactive_figure, generate_static_figure, b64_image
 import base64
 import io
 from dash import html
@@ -79,13 +79,8 @@ def register_callbacks(app):
             top_n, annotate_cutoff, annotate_revert, manual_genes, annotation_color,
             annotation_font_size, annotation_font_color, force_text
         )
-        static_img_path = 'data:assets/png;base64,{}'.format(base64.b64encode(
-                open(
-                    static_img_path, 'rb'
-                ).read()
-            ).decode()
-                            )
-        return static_img_path
+
+        return b64_image(static_img_path)
 
     # Callback to process the uploaded file and display its info
     @app.callback(

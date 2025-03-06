@@ -3,19 +3,25 @@ import plotly.express as px
 from io import StringIO
 import base64
 import math
+import matplotlib
+matplotlib.use('Agg')  # Use a non-GUI backend
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from adjustText import adjust_text
 
 
+
+      
 def parse_data(contents):
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
     df = pd.read_csv(StringIO(decoded.decode('utf-8')))  # Modify if Excel
     return df
 
-def generate_interactive_figure(df, x_col, y_col, x_log=False, x_revert=False, y_log=False, y_revert=False, 
+def generate_interactive_figure(df, x_col, y_col,
+                                x_log=False, x_revert=False,
+                                y_log=False, y_revert=False, 
                                 point_size=10, point_color='blue', theme='light',
                                 label_col=None, annotate_col=None,
                                 top_n=0, annotate_cutoff=None, annotate_revert=False, manual_genes='',
@@ -35,31 +41,9 @@ def generate_interactive_figure(df, x_col, y_col, x_log=False, x_revert=False, y
     if isinstance(annotation_font_color, dict) and 'hex' in annotation_font_color:
         annotation_font_color = annotation_font_color['hex']
     
-    # Store the labels after filtering by different criteria
-    sel_labels = []
-    if top_n is None:
-        top_n = 0
-    # Annotate based on the top N points in the annotate_col column
-    if top_n > 0 and annotate_col in df.columns and label_col in df.columns:
-        if annotate_revert:
-            sorted_df = df.sort_values(by=annotate_col, ascending=False)
-        else:
-            sorted_df = df.sort_values(by=annotate_col, ascending=True)
-        sel_labels += sorted_df[label_col].head(top_n).tolist()
-    
-    # Annotate by the defined cutoff
-    if annotate_cutoff is not None and annotate_col in df.columns and label_col in df.columns:
-        if annotate_revert:
-            sel_labels += df[df[annotate_col] > annotate_cutoff][label_col].tolist()
-        else:
-            sel_labels += df[df[annotate_cutoff] < annotate_cutoff][label_col].tolist()
-    
-    # Annotate manually entered genes
-    if manual_genes:
-        # Split by comma or space and remove whitespace
-        sel_labels += [gene.strip() for gene in manual_genes.replace(',', ' ').split()]
-        
-    sel_labels = list(set(sel_labels))
+    sel_labels = get_annotate_labels(df, top_n, annotate_col, label_col,
+                                     annotate_revert, annotate_cutoff,
+                                     manual_genes)
     
     # Add overlay layer for highlighted points with different color and text annotations
     if sel_labels and label_col:
@@ -77,7 +61,7 @@ def generate_interactive_figure(df, x_col, y_col, x_log=False, x_revert=False, y
             marker=dict(size=point_size, color=annotation_color),
             text=highlighted_df[label_col],
             textposition="top center",
-            textfont=dict(size=annotation_font_size, color=annotation_font_color),
+            textfont=dict(size=annotation_font_size*2, color=annotation_font_color),
             showlegend=False
         )
     else:
@@ -144,28 +128,10 @@ def generate_static_figure(df, x_col, y_col, x_log=False, x_revert=False, y_log=
     # Prepare figure
     fig, ax = plt.subplots(figsize=((width/dpi)*extra_size, (height/dpi)*extra_size))  # Set square figure size
     
-    # Store the labels after filtering by different criteria
-    sel_labels = []
+    sel_labels = get_annotate_labels(df, top_n, annotate_col, label_col,
+                                     annotate_revert, annotate_cutoff,
+                                     manual_genes)
 
-    # Annotate based on the top N points in the annotate_col column
-    if top_n > 0 and annotate_col in df.columns and label_col in df.columns:
-        sorted_df = df.sort_values(by=annotate_col, ascending=not annotate_revert)
-        sel_labels += sorted_df[label_col].head(top_n).tolist()
-    
-    # Annotate by the defined cutoff
-    if annotate_cutoff is not None and annotate_col in df.columns and label_col in df.columns:
-        if annotate_revert:
-            sel_labels += df[df[annotate_col] > annotate_cutoff][label_col].tolist()
-        else:
-            sel_labels += df[df[annotate_col] < annotate_cutoff][label_col].tolist()
-    
-    # Annotate manually entered genes
-    if manual_genes:
-        sel_labels += [gene.strip() 
-                       for gene in manual_genes.replace(',', ' ').split()]
-        
-    sel_labels = list(set(sel_labels))  # Remove duplicates
-    
     if label_col and sel_labels:
         # Separate data into highlighted and non-highlighted
         highlighted_df = df[df[label_col].isin(sel_labels)]
@@ -242,3 +208,34 @@ def generate_static_figure(df, x_col, y_col, x_log=False, x_revert=False, y_log=
     plt.close(fig)  # Close the figure after saving
     
     return fig_path
+
+def get_annotate_labels(df, top_n, annotate_col, label_col,
+                        annotate_revert, annotate_cutoff, manual_genes):
+    # Store the labels after filtering by different criteria
+    sel_labels = []
+
+    # Annotate based on the top N points in the annotate_col column
+    if top_n > 0 and annotate_col in df.columns and label_col in df.columns:
+        sorted_df = df.sort_values(by=annotate_col, ascending=not annotate_revert)
+        sel_labels += sorted_df[label_col].head(top_n).tolist()
+    
+    # Annotate by the defined cutoff
+    if annotate_cutoff is not None and annotate_col in df.columns and label_col in df.columns:
+        if annotate_revert:
+            sel_labels += df[df[annotate_col] > annotate_cutoff][label_col].tolist()
+        else:
+            sel_labels += df[df[annotate_col] < annotate_cutoff][label_col].tolist()
+    
+    # Annotate manually entered genes
+    if manual_genes:
+        sel_labels += [gene.strip() 
+                       for gene in manual_genes.replace(',', ' ').split()]
+        
+    sel_labels = list(set(sel_labels))  # Remove duplicates
+    return sel_labels
+
+# Using base64 encoding and decoding
+def b64_image(image_filename):
+    with open(image_filename, 'rb') as f:
+        image = f.read()
+    return 'data:image/png;base64,' + base64.b64encode(image).decode('utf-8')
